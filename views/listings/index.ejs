@@ -1,11 +1,76 @@
 
 <% layout("layouts/boilerplate") %>
-<body>
-    <h3>All listings</h3>
-    <!-- <form method="GET" action="/listings/new">
-        <button>Create New Listing</button>
-    </form> -->
+  
+<div id="filters" class="mt-2">
 
+    <%
+        const getCount = (name) => {
+            const item = categoryCounts.find(c => c._id === name);
+            return item ? item.count : 0;
+        };
+    %>
+
+    <a href="/listings?category=Trending"
+       class="filter <%= category === 'Trending' ? 'active' : '' %>">
+        <i class="fa-solid fa-fire"></i>
+        <p>Trending (<%= getCount("Trending") %>)</p>
+    </a>
+
+    <a href="/listings?category=Rooms"
+       class="filter <%= category === 'Rooms' ? 'active' : '' %>">
+        <i class="fa-solid fa-bed"></i>
+        <p>Rooms (<%= getCount("Rooms") %>)</p>
+    </a>
+
+    <a href="/listings?category=Iconic%20cities"
+       class="filter <%= category === 'Iconic cities' ? 'active' : '' %>">
+        <i class="fa-solid fa-mountain-city"></i>
+        <p>Iconic cities (<%= getCount("Iconic cities") %>)</p>
+    </a>
+
+    <a href="/listings?category=Mountains"
+       class="filter <%= category === 'Mountains' ? 'active' : '' %>">
+        <i class="fa-solid fa-mountain"></i>
+        <p>Mountains (<%= getCount("Mountains") %>)</p>
+    </a>
+
+    <a href="/listings?category=Castels"
+       class="filter <%= category === 'Castels' ? 'active' : '' %>">
+        <i class="fa-solid fa-font-awesome"></i>
+        <p>Castels (<%= getCount("Castels") %>)</p>
+    </a>
+
+    <a href="/listings?category=Amazing%20pools"
+       class="filter <%= category === 'Amazing pools' ? 'active' : '' %>">
+        <i class="fa-solid fa-person-swimming"></i>
+        <p>Amazing pools (<%= getCount("Amazing pools") %>)</p>
+    </a>
+
+    <a href="/listings?category=Camping"
+       class="filter <%= category === 'Camping' ? 'active' : '' %>">
+        <i class="fa-solid fa-campground"></i>
+        <p>Camping (<%= getCount("Camping") %>)</p>
+    </a>
+
+    <a href="/listings?category=Farms"
+       class="filter <%= category === 'Farms' ? 'active' : '' %>">
+        <i class="fa-solid fa-cow"></i>
+        <p>Farms (<%= getCount("Farms") %>)</p>
+    </a>
+
+    <a href="/listings?category=Arctic"
+       class="filter <%= category === 'Arctic' ? 'active' : '' %>">
+        <i class="fa-solid fa-snowflake"></i>
+        <p>Arctic (<%= getCount("Arctic") %>)</p>
+    </a>
+
+    <div class="tax-toggle">
+        <div class="form-check-reverse form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+          <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+        </div>
+    </div>
+</div>
     <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 listing-card">
         <% for(let listing of allListings){ %>
         
@@ -13,12 +78,14 @@
                 <div class="card col listing-card" >
 
                         <div class="card-img-overlay"></div>
-                    <img src="<%= listing.image%>" class="card-img-top" alt="listing_image" style="height: 20rem;">
+                    <img src="<%= listing.image.url%>" class="card-img-top" alt="listing_image" style="height: 20rem;">
                     <div class="card-body">
                         <p class="card-text">
                             <b><%= listing.title %></b><br>
                             &#8377; <%= listing.price.toLocaleString("en-IN") %>/night
+                            <i class="tax-info"> &nbsp; &nbsp;+18% GST</i>
                         </p>
+                        
                     </div>
 
                 </div>
@@ -45,6 +112,20 @@
             </li>
         <% } %>
     </ul> -->
-</body>
 
 
+
+    <script>
+        let taxSwitch=document.getElementById("switchCheckDefault");
+        taxSwitch.addEventListener("click",()=>{
+            let taxInfo=document.getElementsByClassName("tax-info");
+            for(info of taxInfo){
+                if(info.style.display!="inline"){
+                    info.style.display="inline";
+                }
+                else{
+                    info.style.display="none";
+                }
+           }
+        })
+    </script>

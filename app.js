@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV !="production"){
+    require('dotenv').config();
+}
+// console.log(process.env.SECRET);
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -51,11 +55,6 @@ const sessionOptions={
         httpOnly:true,
     },
 };
-
-app.get("/",(req,res)=>{
-    console.log("Hi,I am root server");
-    res.send("Hi, I am the root server");
-});
 
 app.use(session(sessionOptions));
 app.use(flash());

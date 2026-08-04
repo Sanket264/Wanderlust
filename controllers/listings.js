@@ -1,8 +1,26 @@
 const Listing=require("../models/listing.js");
 
-module.exports.index=async(req,res)=>{
-    const allListings=await Listing.find({});
-    res.render("listings/index.ejs",{allListings});
+module.exports.index = async (req, res) => {
+    const { category } = req.query;
+
+    const allListings = category
+        ? await Listing.find({ category })
+        : await Listing.find({});
+
+    const categoryCounts = await Listing.aggregate([
+        {
+            $group: {
+                _id: "$category",
+                count: { $sum: 1 }
+            }
+        }
+    ]);
+
+    res.render("listings/index.ejs", {
+        allListings,
+        category,
+        categoryCounts
+    });
 };
 
 module.exports.renderNewForm=(req,res)=>{
@@ -23,13 +41,24 @@ module.exports.showListing=async (req, res) => {
         req.flash("error", "Listing you requested does not exist!");
         return res.redirect("/listings");
     }
+    // console.log(listing);
     res.render("listings/show.ejs", { listing });
 };
 
 module.exports.createListing=async(req,res)=>{
+   // console.log(req.body.listing);
+    let url=req.file.path;
+    let filename=req.file.filename;
+    
     const newListing=new Listing(req.body.listing);
     newListing.owner=req.user._id;
+    newListing.image={
+        url: url,
+        filename: filename
+    };
     await newListing.save();
+   // console.log("Saved listing:", newListing);
+
     req.flash("success","New listing created successfully");
     res.redirect("/listings");
 };
@@ -41,11 +70,23 @@ module.exports.renderEditForm=async(req,res)=>{
         req.flash("error", "Listing you requested does not exist!");
         return res.redirect("/listings");
     }
-    res.render("listings/edit",{listing});
+    let originalImageUrl=listing.image.url;
+    originalImageUrl=originalImageUrl.replace("/upload/","/upload/h_300,w_250,c_fill/");
+    // console.log("IMAGE URL:", listing.image.url);
+    // console.log("TRANSFORMED URL:", originalImageUrl);
+    res.render("listings/edit",{listing,originalImageUrl});
 };
 module.exports.updateListing=async(req,res)=>{
     let {id}=req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing});
+    let listing=await Listing.findByIdAndUpdate(id, { ...req.body.listing});
+
+    if(typeof req.file !== "undefined"){
+        let url=req.file.path;
+        let filename=req.file.filename;
+        listing.image={url,filename};
+        await listing.save();
+    }
+    
     req.flash("success","Listing Updated successfully");
     res.redirect(`/listings/${id}`);
 };
