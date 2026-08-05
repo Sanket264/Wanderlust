@@ -103,7 +103,9 @@ app.use((err,req,res,next)=>{
     res.status(statusCode).render("err.ejs",{message});
     // res.status(statusCode).send(message);
 });
-
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
 app.listen(process.env.PORT || 8080, () => {
     console.log(`Server is running on port ${process.env.PORT || 8080}`);
 });
