@@ -51,7 +51,7 @@ const store=MongoStore.create({
         secret:process.env.SECRET ,
     }
 });
-store.on("error",()=>{
+store.on("error",(err)=>{
     console.log("Session store error",err);
 });
 const sessionOptions={
